@@ -53,7 +53,6 @@ def chat_room(request, chat_room_id):
 class ChatRoomAPI(APIView):
     permission_classes = (IsAuthenticated,)
 
-    # TODO: Introduce Pagination to limit the number of messages returned
     def get(self, request, chat_room_id):
         chat_room = get_object_or_404(ChatRoom, room_id=chat_room_id)
         messages = chat_room.messages.all().order_by("-created")

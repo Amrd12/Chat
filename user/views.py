@@ -39,17 +39,22 @@ class LoginApiView(TokenObtainPairView):
     )
 
     def post(self, request, *args, **kwargs):
+        print("Request data:", request.data)
         response = super().post(request, *args, **kwargs)
 
         if response.status_code == status.HTTP_200_OK:
-            # Save the token to the database
-            user = request.user
-            # Retrieve existing token for the user
+            # Retrieve the user from the validated data
+            serializer = self.get_serializer(data=request.data)
+            serializer.is_valid(raise_exception=True)
+
+            user = User.objects.get(username=request.data["username"])
+
+            # Create or retrieve the token for the authenticated user
             token, created = Token.objects.get_or_create(user=user)
-            # Use the existing token if it exists, otherwise create a new one
             response.data["token"] = token.key
 
         return response
+
 
 
 class SignupApiView(generics.CreateAPIView):
